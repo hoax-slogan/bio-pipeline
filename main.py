@@ -13,7 +13,7 @@ def main():
     geo_dfs = []
 
     # for geo_id in geo_ids:
-        # geo_df = parse_geo_data_and_metadata(geo_id)
+        # geo_df = parse_geo_data(geo_id)
         # geo_dfs.append(geo_df)
 
     print(geo_dfs.head())

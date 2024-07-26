@@ -1,5 +1,26 @@
+import json
 import pandas as pd
 from bs4 import BeautifulSoup
+from lxml import etree
+
+
+def detect_format(metadata_text):
+    try:
+        json.loads(metadata_text)
+        return 'json'
+    except json.JSONDecodeError:
+        pass
+    
+    try:
+        etree.fromstring(metadata_text)
+        return 'xml'
+    except etree.XMLSyntaxError:
+        pass
+
+    if metadata_text.strip().startswith('<'):
+        return 'html'
+
+    return 'text'
 
 
 def parse_geo_data(raw_data):
