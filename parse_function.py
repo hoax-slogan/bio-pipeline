@@ -10,7 +10,7 @@ def detect_format(metadata_text):
         return 'json'
     except json.JSONDecodeError:
         pass
-    
+
     try:
         etree.fromstring(metadata_text)
         return 'xml'
@@ -40,12 +40,12 @@ def parse_geo_data(raw_data):
     return df
 
 
-def parse_geo_metadata(metadata):
-    soup = BeautifulSoup(metadata, 'html.parser')
-    meta_dict = {}
+# def parse_geo_metadata(metadata):
+#     soup = BeautifulSoup(metadata, 'html.parser')
+#     meta_dict = {}
 
-    for line in metadata.splitlines():
-        if line.startswith("!Sample_title"):
-            sample_titles = line.split('\t')[1:]
-            meta_dict['SampleID'] = sample_titles
-    return meta_dict
+#     for line in metadata.splitlines():
+#         if line.startswith("!Sample_title"):
+#             sample_titles = line.split('\t')[1:]
+#             meta_dict['SampleID'] = sample_titles
+#     return meta_dict
