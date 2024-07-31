@@ -54,8 +54,7 @@ def parse_geo_metadata_text(metadata_text):
 
 def parse_json_metadata(metadata_text):
     metadata = json.loads(metadata_text)
-    # continue extraction process here
-    print(metadata)
+    return metadata
 
 
 def parse_xml_metadata(metadata_text):
