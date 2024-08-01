@@ -3,7 +3,7 @@ import json
 import pandas as pd
 from collections import defaultdict
 from lxml import etree
-from typing import List, Dict, Union, Optional
+from typing import Any, Dict, List,  Optional, Union
 
 
 logger = logging.getLogger(__name__)
@@ -57,9 +57,25 @@ def parse_geo_metadata_text(metadata_text):
         return parse_text_metadata(metadata_text)
 
 
-def parse_json_metadata(metadata_text):
-    metadata = json.loads(metadata_text)
-    return metadata
+def parse_json_metadata(metadata_text: Union[str, bytes]) -> Optional[Union[Dict[str, Any], List[Any]]]:
+    """
+    Parses JSON metadata from a given text or file-like object.
+
+    Args:
+        metadata_text (str or bytes): JSON content to be parsed.
+
+    Returns:
+        Optional[Union[Dict[str, Any], List[Any]]]: A parsed JSON object,
+        which can be a dictionary or a list, or None is parsing fails.
+    """
+    try:
+        metadata = json.loads(metadata_text)
+        return metadata
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decoding error: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+    return None
 
 
 def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[str, Optional[str]]]]:
