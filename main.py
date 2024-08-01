@@ -1,6 +1,11 @@
+import logging
 from fetch_function import fetch_geo_data
 from search_function import search_geo
 from parse_function import parse_geo_data
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -16,10 +21,7 @@ def main():
         # geo_df = parse_geo_data(geo_id)
         # geo_dfs.append(geo_df)
 
-    print(geo_dfs.head())
-
-
-
+    # print(geo_dfs.head())
 
 if __name__ == "__main__":
     main()

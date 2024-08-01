@@ -21,7 +21,7 @@ def fetch_geo_metadata(id):
         response_metadata = requests.get(url_metadata)
         response_metadata.raise_for_status()
         metadata_text = response_metadata.text
-        print(metadata_text)
+        return metadata_text
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occured: {http_err}")
     except Exception as err:

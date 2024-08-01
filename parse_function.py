@@ -1,7 +1,12 @@
+import logging
 import json
 import pandas as pd
-from bs4 import BeautifulSoup
+from collections import defaultdict
 from lxml import etree
+from typing import List, Dict, Union, Optional
+
+
+logger = logging.getLogger(__name__)
 
 
 def parse_geo_data(raw_data):
@@ -57,9 +62,42 @@ def parse_json_metadata(metadata_text):
     return metadata
 
 
-def parse_xml_metadata(metadata_text):
-    metadata = etree.parse(metadata_text)
-    etree.tostring(metadata.getroot())
+def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[str, Optional[str]]]]:
+    """
+    Parses XML metadata from a given text or file-like object.
+
+    Args:
+        metadata_text (str or bytes): XML content to be parsed.
+
+    Returns:
+        List[Dict[str, Optional[str]]]: A list of dictionaries
+        containing sample data, or None if parsing fails.
+    """
+    try:
+
+        if hasattr(metadata_text, 'read'):
+            metadata = etree.parse(metadata_text)
+        else:
+            metadata = etree.fromstring(metadata_text)
+
+        root = metadata.getroot()
+        samples = []
+
+        for sample in root.findall('.//sample'):
+            sample_data = defaultdict(lambda: None)
+            for child in sample:
+                sample_data[child.tag] = child.text
+            samples.append(dict(sample_data))
+
+        return samples
+
+    except etree.XMLSyntaxError as e:
+        logger.error(f"XML Syntax Error: {e}")
+    except etree.ParseError as e:
+        logger.error(f"Parse error: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+    return None
 
 
 def parse_html_metadata(metadata_text):
