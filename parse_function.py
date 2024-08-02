@@ -90,7 +90,6 @@ def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[s
         containing sample data, or None if parsing fails.
     """
     try:
-
         if hasattr(metadata_text, 'read'):
             metadata = etree.parse(metadata_text)
         else:
@@ -105,13 +104,12 @@ def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[s
                 sample_data = {}
                 for child in element:
                     if child.text and child.text.strip():
-                        sample_data[child.tag] = child.text.strip()
+                        sample_data[child.tag] = child.text
                     else:
                         sample_data[child.tag] = None
                 # Only add non-empty sample_data dictionaries
                 if any(sample_data.values()):
                     samples.append(dict(sample_data))
-
         return samples
 
     except etree.XMLSyntaxError as e:

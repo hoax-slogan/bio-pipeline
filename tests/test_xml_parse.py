@@ -26,7 +26,6 @@ def test_nice_xml_metadata():
 
     metadata_content = StringIO(xml_metadata)
     result = parse_xml_metadata(metadata_content)
-
     assert result == expected_output, f"Expected {expected_output}, but got {result}"
 
 
@@ -55,7 +54,6 @@ def test_malformed_xml_metadata():
 
     metadata_content = StringIO(malformed_xml)
     result = parse_xml_metadata(metadata_content)
-
     assert result is None, f"Expected None, but got {result}"
 
 
@@ -64,7 +62,6 @@ def test_empty_xml_metadata():
 
     metadata_content = empty_xml
     result = parse_xml_metadata(metadata_content)
-
     assert result is None, f"Expected None, but got {result}"
 
 
@@ -87,5 +84,4 @@ def test_partial_xml_metadata():
 
     metadata_content = StringIO(partial_xml)
     result = parse_xml_metadata(metadata_content)
-
     assert result == expected_output, f"Expected {expected_output}, but got {result}"
