@@ -57,7 +57,7 @@ def parse_geo_metadata_text(metadata_text):
         return parse_text_metadata(metadata_text)
 
 
-def parse_json_metadata(metadata_text: Union[str, bytes]) -> Optional[Union[Dict[str, Any], List[Any]]]:
+def parse_json_metadata(metadata_text: str) -> Optional[Union[Dict[str, Any], List[Any]]]:
     """
     Parses JSON metadata from a given text or file-like object.
 
