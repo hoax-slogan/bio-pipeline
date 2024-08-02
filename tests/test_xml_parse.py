@@ -74,13 +74,15 @@ def test_partial_xml_metadata():
                 <samples>
                     <sample>
                     <id>Sample1</id>
+                    <name></name>
+                    <value></value>
                     </sample>
                 </samples>
                 </root>
                 """
 
     expected_output = [
-        {'id': 'Sample1'}
+        {'id': 'Sample1', 'name': None, 'value': None}
     ]
 
     metadata_content = StringIO(partial_xml)

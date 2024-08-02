@@ -101,13 +101,17 @@ def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[s
 
         # Iterate through all elements in the XML
         for element in root.iter():
-            if element.getchildren():
-                sample_data = defaultdict(lambda: None)
+            if len(element) > 0:
+                sample_data = {}
                 for child in element:
-                    if child.text.strip():
-                        sample_data[child.tag] = child.text
-                if sample_data:
+                    if child.text and child.text.strip():
+                        sample_data[child.tag] = child.text.strip()
+                    else:
+                        sample_data[child.tag] = None
+                # Only add non-empty sample_data dictionaries
+                if any(sample_data.values()):
                     samples.append(dict(sample_data))
+
         return samples
 
     except etree.XMLSyntaxError as e:
