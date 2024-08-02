@@ -42,7 +42,8 @@ def test_partial_json_metadata():
                         {
                         "samples": [
                             {"id": "Sample1", "name": "Control", "value": 5.6},
-                            {"id": "Sample2"}
+                            {"id": "Sample2", "name": "", "value": ""},
+                            {"id": "Sample3"}
                         ]
                         }
                     """
@@ -50,7 +51,8 @@ def test_partial_json_metadata():
     expected_outcome = {
         "samples": [
             {"id": "Sample1", "name": "Control", "value": 5.6},
-            {"id": "Sample2", "name": None, "value": None}
+            {"id": "Sample2", "name": None, "value": None},
+            {"id": "Sample3", "name": None, "value": None}
         ]
     }
 
