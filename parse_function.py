@@ -70,6 +70,29 @@ def parse_json_metadata(metadata_text: Union[str, bytes]) -> Optional[Union[Dict
     """
     try:
         metadata = json.loads(metadata_text)
+
+        if isinstance(metadata, dict):
+            for key, value in metadata.items():
+                if isinstance(value, str) and value == "":
+                    metadata[key] = None
+                elif isinstance(value, list):
+                    for item in value:
+                        if isinstance(item, dict):
+                            for k, v in item.items():
+                                if isinstance(v, str) and v == "":
+                                    item[k] = None
+                        elif isinstance(item, str) and item == "":
+                            item = None
+
+        elif isinstance(metadata, list):
+            for item in metadata:
+                if isinstance(item, dict):
+                    for key, value in item.items():
+                        if isinstance(value, str) and value == "":
+                            item[key] = None
+                elif isinstance(item, str) and item == "":
+                    item = None
+
         return metadata
     except json.JSONDecodeError as e:
         logger.error(f"JSON decoding error: {e}")
