@@ -58,3 +58,21 @@ def test_partial_json_metadata():
 
     result = parse_json_metadata(partial_json)
     assert result == expected_outcome, f"Expected {expected_outcome}, but got {result}"
+
+
+# PARSE LOGIC VER 1 ERRORS
+{'samples': [{'id': 'Sample1'}, {'id': 'Sample2'}]}
+{'samples': [{'id': 'Sample1', 'samples': None}, {'id': 'Sample2', 'samples': None}], 'id': None}
+
+
+{'samples': [{'id': 'Sample1', 'name': 'Control', 'value': 5.6}, {'id': 'Sample2', 'name': None, 'value': None}, {'id': 'Sample3', 'name': None, 'value': None}]},
+
+{'samples': [{'id': 'Sample1', 'name': 'Control', 'value': 5.6, 'samples': None}, {'id': 'Sample2', 'name': None, 'value': None, 'samples': None},
+            {'id': 'Sample3', 'value': None, 'samples': None, 'name': None}], 'value': None, 'id': None, 'name': None}
+
+
+
+
+# PARSE LOGIC VER 2 ERRORS
+{'samples': [{'id': 'Sample1', 'name': 'Control', 'value': 5.6}, {'id': 'Sample2', 'name': None, 'value': None}, {'id': 'Sample3', 'name': None, 'value': None}]}
+{'samples': [{'id': 'Sample1', 'name': 'Control', 'value': 5.6}, {'id': 'Sample2', 'name': None, 'value': None}, {'id': 'Sample3'}]}

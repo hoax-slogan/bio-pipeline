@@ -70,6 +70,38 @@ def parse_json_metadata(metadata_text: Union[str, bytes]) -> Optional[Union[Dict
     """
     try:
         metadata = json.loads(metadata_text)
+        # all_keys = set()
+
+        # # Collect all unique keys iteratively
+        # stack = [metadata]
+        # while stack:
+        #     current = stack.pop()
+        #     if isinstance(current, dict):
+        #         for key, value in current.items():
+        #             all_keys.add(key)
+        #             if isinstance(value, (dict, list)):
+        #                 stack.append(value)
+        #     elif isinstance(current, list):
+        #         stack.extend(current)
+
+        # # Fill missing keys and replace empty strings iteratively
+        # stack = [metadata]
+        # while stack:
+        #     current = stack.pop()
+        #     if isinstance(current, dict):
+        #         for key in all_keys:
+        #             if key not in current:
+        #                 current[key] = None
+        #         for key, value in current.items():
+        #             if isinstance(value, str) and value == "":
+        #                 current[key] = None
+        #             elif isinstance(value, (dict, list)):
+        #                 stack.append(value)
+        #     elif isinstance(current, list):
+        #         for item in current:
+        #             stack.append(item)
+
+        # return metadata
 
         if isinstance(metadata, dict):
             for key, value in metadata.items():
