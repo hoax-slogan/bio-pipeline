@@ -1,7 +1,6 @@
 import logging
 import json
 import pandas as pd
-from collections import defaultdict
 from lxml import etree
 from typing import Any, Dict, List,  Optional, Union
 
