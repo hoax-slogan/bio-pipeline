@@ -15,13 +15,6 @@ def main():
 
     geo_ids = input("\nEnter UID's here (seperate by comma): ")
     fetch_geo_data(geo_ids)
-    geo_dfs = []
-
-    # for geo_id in geo_ids:
-        # geo_df = parse_geo_data(geo_id)
-        # geo_dfs.append(geo_df)
-
-    # print(geo_dfs.head())
 
 if __name__ == "__main__":
     main()
