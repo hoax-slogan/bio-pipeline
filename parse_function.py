@@ -69,39 +69,39 @@ def parse_json_metadata(metadata_text: str) -> Optional[Union[Dict[str, Any], Li
     """
     try:
         metadata = json.loads(metadata_text)
-        all_keys_by_level = []
+        all_keys_by_nest_level = []
 
         # Collect all unique keys iteratively
         stack = [(metadata, 0)]
         while stack:
-            current, level = stack.pop()
-            if len(all_keys_by_level) <= level:
-                all_keys_by_level.append(set())
+            current, nest_level = stack.pop()
+            if len(all_keys_by_nest_level) <= nest_level:
+                all_keys_by_nest_level.append(set())
             if isinstance(current, dict):
                 for key, value in current.items():
-                    all_keys_by_level[level].add(key)
+                    all_keys_by_nest_level[nest_level].add(key)
                     if isinstance(value, (dict, list)):
-                        stack.append((value, level + 1))
+                        stack.append((value, nest_level + 1))
             elif isinstance(current, list):
                 for item in current:
-                    stack.append((item, level + 1))
+                    stack.append((item, nest_level + 1))
 
         # Fill missing keys and replace empty strings iteratively
         stack = [(metadata, 0)]
         while stack:
-            current, level = stack.pop()
+            current, nest_level = stack.pop()
             if isinstance(current, dict):
-                for key in all_keys_by_level[level]:
+                for key in all_keys_by_nest_level[nest_level]:
                     if key not in current:
                         current[key] = None
                 for key, value in current.items():
                     if isinstance(value, str) and value == "":
                         current[key] = None
                     elif isinstance(value, (dict, list)):
-                        stack.append((value, level + 1))
+                        stack.append((value, nest_level + 1))
             elif isinstance(current, list):
                 for item in current:
-                    stack.append((item, level + 1))
+                    stack.append((item, nest_level + 1))
         return metadata
 
     except json.JSONDecodeError as e:
