@@ -119,7 +119,7 @@ def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[s
         metadata_text (str or bytes): XML content to be parsed.
 
     Returns:
-        List[Dict[str, Optional[str]]]: A list of dictionaries
+        Optional[List[Dict[str, Optional[str]]]]: A list of dictionaries
         containing sample data, or None if parsing fails.
     """
     try:
