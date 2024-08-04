@@ -69,62 +69,41 @@ def parse_json_metadata(metadata_text: Union[str, bytes]) -> Optional[Union[Dict
     """
     try:
         metadata = json.loads(metadata_text)
-        # all_keys = set()
+        all_keys_by_level = []
 
-        # # Collect all unique keys iteratively
-        # stack = [metadata]
-        # while stack:
-        #     current = stack.pop()
-        #     if isinstance(current, dict):
-        #         for key, value in current.items():
-        #             all_keys.add(key)
-        #             if isinstance(value, (dict, list)):
-        #                 stack.append(value)
-        #     elif isinstance(current, list):
-        #         stack.extend(current)
+        # Collect all unique keys iteratively
+        stack = [(metadata, 0)]
+        while stack:
+            current, level = stack.pop()
+            if len(all_keys_by_level) <= level:
+                all_keys_by_level.append(set())
+            if isinstance(current, dict):
+                for key, value in current.items():
+                    all_keys_by_level[level].add(key)
+                    if isinstance(value, (dict, list)):
+                        stack.append((value, level + 1))
+            elif isinstance(current, list):
+                for item in current:
+                    stack.append((item, level + 1))
 
-        # # Fill missing keys and replace empty strings iteratively
-        # stack = [metadata]
-        # while stack:
-        #     current = stack.pop()
-        #     if isinstance(current, dict):
-        #         for key in all_keys:
-        #             if key not in current:
-        #                 current[key] = None
-        #         for key, value in current.items():
-        #             if isinstance(value, str) and value == "":
-        #                 current[key] = None
-        #             elif isinstance(value, (dict, list)):
-        #                 stack.append(value)
-        #     elif isinstance(current, list):
-        #         for item in current:
-        #             stack.append(item)
-
-        # return metadata
-
-        if isinstance(metadata, dict):
-            for key, value in metadata.items():
-                if isinstance(value, str) and value == "":
-                    metadata[key] = None
-                elif isinstance(value, list):
-                    for item in value:
-                        if isinstance(item, dict):
-                            for k, v in item.items():
-                                if isinstance(v, str) and v == "":
-                                    item[k] = None
-                        elif isinstance(item, str) and item == "":
-                            item = None
-
-        elif isinstance(metadata, list):
-            for item in metadata:
-                if isinstance(item, dict):
-                    for key, value in item.items():
-                        if isinstance(value, str) and value == "":
-                            item[key] = None
-                elif isinstance(item, str) and item == "":
-                    item = None
-
+        # Fill missing keys and replace empty strings iteratively
+        stack = [(metadata, 0)]
+        while stack:
+            current, level = stack.pop()
+            if isinstance(current, dict):
+                for key in all_keys_by_level[level]:
+                    if key not in current:
+                        current[key] = None
+                for key, value in current.items():
+                    if isinstance(value, str) and value == "":
+                        current[key] = None
+                    elif isinstance(value, (dict, list)):
+                        stack.append((value, level + 1))
+            elif isinstance(current, list):
+                for item in current:
+                    stack.append((item, level + 1))
         return metadata
+
     except json.JSONDecodeError as e:
         logger.error(f"JSON decoding error: {e}")
     except Exception as e:
