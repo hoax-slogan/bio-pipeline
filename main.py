@@ -1,7 +1,7 @@
 import logging
-from fetch_function import fetch_geo_data
-from search_function import search_geo
-from parse_function import parse_geo_data
+from fetch import fetch_geo_data
+from search import search_geo
+from parse import parse_geo_data
 
 
 logging.basicConfig(level=logging.INFO)

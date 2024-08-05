@@ -71,6 +71,7 @@ def normalize_json_metadata(metadata_text: str) -> Optional[Union[Dict[str, Any]
         metadata = json.loads(metadata_text)
     except json.JSONDecodeError as e:
         logger.error(f"JSON decoding error: {e}")
+        return None
 
     all_keys_by_nest_level = []
 
@@ -110,7 +111,7 @@ def normalize_json_metadata(metadata_text: str) -> Optional[Union[Dict[str, Any]
 
 def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[str, Optional[str]]]]:
     """
-    Parses XML metadata from a given text or file-like object.
+    Parses XML metadata from a given string.
 
     Args:
         metadata_text (str or bytes): XML content to be parsed.
@@ -120,35 +121,28 @@ def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[s
         containing sample data, or None if parsing fails.
     """
     try:
-        if hasattr(metadata_text, 'read'):
-            metadata = etree.parse(metadata_text)
-        else:
-            metadata = etree.fromstring(metadata_text)
-
-        root = metadata.getroot()
-        samples = []
-
-        # Iterate through all elements in the XML
-        for element in root.iter():
-            if len(element) > 0:
-                sample_data = {}
-                for child in element:
-                    if child.text and child.text.strip():
-                        sample_data[child.tag] = child.text
-                    else:
-                        sample_data[child.tag] = None
-                # Only add non-empty sample_data dictionaries
-                if any(sample_data.values()):
-                    samples.append(dict(sample_data))
-        return samples
-
+        metadata = etree.fromstring(metadata_text)
     except etree.XMLSyntaxError as e:
         logger.error(f"XML Syntax Error: {e}")
     except etree.ParseError as e:
         logger.error(f"Parse error: {e}")
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
-    return None
+
+    root = metadata.getroot()
+    samples = []
+
+    # Iterate through all elements in the XML
+    for element in root.iter():
+        if len(element) > 0:
+            sample_data = {}
+            for child in element:
+                if child.text and child.text.strip():
+                    sample_data[child.tag] = child.text
+                else:
+                    sample_data[child.tag] = None
+            # Only add non-empty sample_data dictionaries
+            if any(sample_data.values()):
+                samples.append(dict(sample_data))
+    return samples
 
 
 def parse_html_metadata(metadata_text):

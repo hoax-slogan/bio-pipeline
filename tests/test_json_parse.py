@@ -1,4 +1,4 @@
-from parse_function import normalize_json_metadata
+from parse import normalize_json_metadata
 
 
 def test_nice_json_metadata():

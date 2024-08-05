@@ -1,4 +1,4 @@
-from parse_function import parse_xml_metadata
+from parse import parse_xml_metadata
 from io import StringIO
 
 def test_nice_xml_metadata():
