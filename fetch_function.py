@@ -10,8 +10,6 @@ def fetch_geo_data(id):
         print(raw_data)
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occured: {http_err}")
-    except Exception as err:
-        print(f"An error occured: {err}")
     return None
 
 
@@ -24,6 +22,4 @@ def fetch_geo_metadata(id):
         return metadata_text
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occured: {http_err}")
-    except Exception as err:
-        print(f"An error has occured: {err}")
     return None

@@ -47,7 +47,7 @@ def parse_geo_metadata_text(metadata_text):
     format_type = detect_format(metadata_text)
 
     if format_type == 'json':
-        return parse_json_metadata(metadata_text)
+        return normalize_json_metadata(metadata_text)
     elif format_type == 'xml':
         return parse_xml_metadata(metadata_text)
     elif format_type == 'html':
@@ -56,59 +56,56 @@ def parse_geo_metadata_text(metadata_text):
         return parse_text_metadata(metadata_text)
 
 
-def parse_json_metadata(metadata_text: str) -> Optional[Union[Dict[str, Any], List[Any]]]:
+def normalize_json_metadata(metadata_text: str) -> Optional[Union[Dict[str, Any], List[Any]]]:
     """
-    Parses JSON metadata from a given string.
+    Parses/normalizes JSON metadata from a given string.
 
     Args:
-        metadata_text str: JSON content to be parsed.
+        metadata_text str: JSON content to be parsed/normalized.
 
     Returns:
         Optional[Union[Dict[str, Any], List[Any]]]: A parsed JSON object,
-        which can be a dictionary or a list, or None is parsing fails.
+        which can be a dictionary or a list, or None if decoding fails.
     """
     try:
         metadata = json.loads(metadata_text)
-        all_keys_by_nest_level = []
-
-        # Collect all unique keys iteratively
-        stack = [(metadata, 0)]
-        while stack:
-            current, nest_level = stack.pop()
-            if len(all_keys_by_nest_level) <= nest_level:
-                all_keys_by_nest_level.append(set())
-            if isinstance(current, dict):
-                for key, value in current.items():
-                    all_keys_by_nest_level[nest_level].add(key)
-                    if isinstance(value, (dict, list)):
-                        stack.append((value, nest_level + 1))
-            elif isinstance(current, list):
-                for item in current:
-                    stack.append((item, nest_level + 1))
-
-        # Fill missing keys and replace empty strings iteratively
-        stack = [(metadata, 0)]
-        while stack:
-            current, nest_level = stack.pop()
-            if isinstance(current, dict):
-                for key in all_keys_by_nest_level[nest_level]:
-                    if key not in current:
-                        current[key] = None
-                for key, value in current.items():
-                    if isinstance(value, str) and value == "":
-                        current[key] = None
-                    elif isinstance(value, (dict, list)):
-                        stack.append((value, nest_level + 1))
-            elif isinstance(current, list):
-                for item in current:
-                    stack.append((item, nest_level + 1))
-        return metadata
-
     except json.JSONDecodeError as e:
         logger.error(f"JSON decoding error: {e}")
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
-    return None
+
+    all_keys_by_nest_level = []
+
+    # Collect all unique keys iteratively
+    stack = [(metadata, 0)]
+    while stack:
+        current, nest_level = stack.pop()
+        if len(all_keys_by_nest_level) <= nest_level:
+            all_keys_by_nest_level.append(set())
+        if isinstance(current, dict):
+            for key, value in current.items():
+                all_keys_by_nest_level[nest_level].add(key)
+                if isinstance(value, (dict, list)):
+                    stack.append((value, nest_level + 1))
+        elif isinstance(current, list):
+            for item in current:
+                stack.append((item, nest_level + 1))
+
+    # Fill missing keys and replace empty strings iteratively
+    stack = [(metadata, 0)]
+    while stack:
+        current, nest_level = stack.pop()
+        if isinstance(current, dict):
+            for key in all_keys_by_nest_level[nest_level]:
+                if key not in current:
+                    current[key] = None
+            for key, value in current.items():
+                if isinstance(value, str) and value == "":
+                    current[key] = None
+                elif isinstance(value, (dict, list)):
+                    stack.append((value, nest_level + 1))
+        elif isinstance(current, list):
+            for item in current:
+                stack.append((item, nest_level + 1))
+    return metadata
 
 
 def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[str, Optional[str]]]]:
