@@ -90,6 +90,12 @@ def normalize_json_metadata(metadata_text: str) -> Optional[Union[Dict[str, Any]
             for item in current:
                 stack.append((item, nest_level + 1))
 
+    # Sort the keys at each nesting level
+    sorted_keys_by_nest_level = []
+    for keys in all_keys_by_nest_level:
+        sorted_keys = sorted(list(keys))
+        sorted_keys_by_nest_level.append(sorted_keys)
+
     # Fill missing keys and replace empty strings iteratively
     stack = [(metadata, 0)]
     while stack:
@@ -103,6 +109,14 @@ def normalize_json_metadata(metadata_text: str) -> Optional[Union[Dict[str, Any]
                     current[key] = None
                 elif isinstance(value, (dict, list)):
                     stack.append((value, nest_level + 1))
+
+            # Ensure the dictionary has the keys in the correct order
+            ordered_current = {}
+            for key in sorted_keys_by_nest_level[nest_level]:
+                ordered_current[key] = current[key]
+            current.clear()
+            current.update(ordered_current)
+
         elif isinstance(current, list):
             for item in current:
                 stack.append((item, nest_level + 1))
@@ -111,7 +125,7 @@ def normalize_json_metadata(metadata_text: str) -> Optional[Union[Dict[str, Any]
 
 def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[str, Optional[str]]]]:
     """
-    Parses XML metadata from a given string.
+    Parses XML metadata from a given text or file-like object.
 
     Args:
         metadata_text (str or bytes): XML content to be parsed.
@@ -121,11 +135,13 @@ def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[s
         containing sample data, or None if parsing fails.
     """
     try:
-        metadata = etree.fromstring(metadata_text)
+        if hasattr(metadata_text, 'read'):
+            metadata = etree.parse(metadata_text)
+        else:
+            metadata = etree.fromstring(metadata_text)
     except etree.XMLSyntaxError as e:
         logger.error(f"XML Syntax Error: {e}")
-    except etree.ParseError as e:
-        logger.error(f"Parse error: {e}")
+        return None
 
     root = metadata.getroot()
     samples = []
@@ -143,6 +159,7 @@ def parse_xml_metadata(metadata_text: Union[str, bytes]) -> Optional[List[Dict[s
             if any(sample_data.values()):
                 samples.append(dict(sample_data))
     return samples
+
 
 
 def parse_html_metadata(metadata_text):
